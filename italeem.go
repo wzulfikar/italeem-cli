@@ -48,12 +48,13 @@ func scrapeAnnouncements(url string) {
 		fmt.Printf("→%s\n→ %s\n\n", announcement, url)
 	})
 
+	icon := "/home/user/icon.png"
 	notify = notificator.New(notificator.Options{
-		DefaultIcon: "icon/default.png",
+		DefaultIcon: icon,
 		AppName:     "Italeem CLI",
 	})
 
-	notify.Push("Finished fetching recent announcements", "", "/home/user/icon.png", notificator.UR_CRITICAL)
+	notify.Push("Finished fetching recent announcements", "", icon, notificator.UR_CRITICAL)
 }
 
 func main() {
