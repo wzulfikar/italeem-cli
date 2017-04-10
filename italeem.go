@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -45,6 +46,8 @@ func scrapeAnnouncements(resp *http.Response) {
 		log.Fatal(err)
 	}
 
+	countAnnouncements := 0
+
 	// Find announcement items
 	doc.Find(".messagemenu .dropdown-menu li a").Each(func(i int, s *goquery.Selection) {
 		url, ok := s.Attr("href")
@@ -71,7 +74,8 @@ func scrapeAnnouncements(resp *http.Response) {
 			time_ago: time,
 		}
 
-		fmt.Printf("%s. %s - %s\n", color.CyanString(strconv.Itoa(i+1)), color.GreenString(announcement.author), color.YellowString(announcement.time_ago))
+		countAnnouncements++
+		fmt.Printf("%s. %s - %s\n", color.CyanString(strconv.Itoa(countAnnouncements)), color.GreenString(announcement.author), color.YellowString(announcement.time_ago))
 		fmt.Printf("→%s\n→ %s\n\n", announcement.text, announcement.url)
 	})
 
@@ -81,7 +85,8 @@ func scrapeAnnouncements(resp *http.Response) {
 		AppName:     "Italeem CLI",
 	})
 
-	notify.Push("Finished fetching recent announcements", "", icon, notificator.UR_CRITICAL)
+	msg := strconv.Itoa(countAnnouncements) + " announcements fetched."
+	notify.Push(msg, "", icon, notificator.UR_CRITICAL)
 }
 
 func createClient() http.Client {
@@ -109,24 +114,26 @@ func login(client http.Client, loginUrl string, username string, password string
 		"password":         {password},
 		"rememberusername": {"1"},
 	})
+	defer resp.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// TODO: fix "http: read on closed response body" error
-	// exitIfNotAuthenticated(resp)
+	// read the response body to a variable
+	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	bodyString := string(bodyBytes)
+
+	exitIfNotAuthenticated(bodyString)
+
+	//reset the response body to the original unread state
+	resp.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
 
 	return resp
 }
 
-func exitIfNotAuthenticated(resp *http.Response) {
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func exitIfNotAuthenticated(html string) {
 	notLoggedInString := "Forgotten your username or password?"
-	if strings.Contains(string(data), notLoggedInString) {
+	if strings.Contains(html, notLoggedInString) {
 		fmt.Println(color.RedString("\nAuthentication failed. Please try again :)"))
 
 		err := os.Remove(getCredFile())
@@ -139,10 +146,10 @@ func exitIfNotAuthenticated(resp *http.Response) {
 
 func getAuthInfoFromUser() (string, string) {
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Print("Enter username: ")
+	fmt.Print(color.CyanString("Enter username: "))
 	username, _ := reader.ReadString('\n')
 
-	password, err := speakeasy.Ask("Password (it won't be displayed): ")
+	password, err := speakeasy.Ask(color.CyanString("Password ") + "(it won't be displayed): ")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -161,7 +168,8 @@ func getCred() (string, string) {
 		err := ioutil.WriteFile(credFile, cred, 0644)
 		check(err)
 
-		return username, password
+		// trims space to avoid trailing "\n" char
+		return strings.TrimSpace(username), strings.TrimSpace(password)
 	}
 
 	cred, err := ioutil.ReadFile(credFile)
