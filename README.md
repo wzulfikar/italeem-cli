@@ -1,6 +1,6 @@
 # italeem-cli
-Display info from italeem website using command line
+Display recent notifications from italeem website using command line
 
 # TODO
 [ ] - auth
-[ ] - scrape recent messages
+[ ] - add timeout
