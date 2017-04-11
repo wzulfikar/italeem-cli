@@ -1,9 +1,11 @@
 package util
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -69,4 +71,8 @@ func ScrapeAnnouncements(resp *http.Response) {
 
 	msg := strconv.Itoa(countAnnouncements) + " announcements fetched."
 	notify.Push(msg, "", icon, notificator.UR_CRITICAL)
+
+	// exit when user press enter
+	fmt.Print("Finished fetching announcements. Press enter to exit..")
+	bufio.NewReader(os.Stdin).ReadBytes('\n')
 }
