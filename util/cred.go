@@ -12,7 +12,12 @@ func getCredFile() string {
 }
 
 func GetCred() (string, string) {
-	key := []byte(home())
+	key_string := home()
+	if length := len(key_string); length > 16 {
+		key_string = key_string[length-16:]
+	}
+
+	key := []byte(key_string)
 	credFile := getCredFile()
 	if _, err := os.Stat(credFile); os.IsNotExist(err) {
 		username, password := GetAuthInfoFromUser()
