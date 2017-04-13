@@ -19,14 +19,14 @@ import (
 )
 
 func Login(client http.Client, loginUrl string, username string, password string) *http.Response {
-	msg := "Authenticating user"
+	msg := "Authenticating user:"
 
 	if runtime.GOOS == "windows" {
-		fmt.Fprintf(color.Output, "\r%s: %s", color.CyanString(msg), username)
+		fmt.Fprintf(color.Output, "\r%s %s", color.CyanString(msg), username)
 	} else {
 		s := spin.New()
 		for i := 0; i < 30; i++ {
-			fmt.Printf("\r%s: %s %s", color.CyanString(msg), username, s.Next())
+			fmt.Printf("\r%s %s %s", color.CyanString(msg), username, s.Next())
 			time.Sleep(100 * time.Millisecond)
 		}
 	}
@@ -56,7 +56,12 @@ func Login(client http.Client, loginUrl string, username string, password string
 func exitIfNotAuthenticated(html string) {
 	notLoggedInString := "Forgotten your username or password?"
 	if strings.Contains(html, notLoggedInString) {
-		fmt.Println(color.RedString("\nAuthentication failed. Please try again :)"))
+		auth_failed_msg := color.RedString("\nAuthentication failed. Please try again :)")
+		if runtime.GOOS == "windows" {
+			fmt.Fprintf(color.Output, auth_failed_msg)
+		} else {
+			fmt.Println(auth_failed_msg)
+		}
 
 		err := os.Remove(getCredFile())
 		if err != nil {
@@ -67,14 +72,30 @@ func exitIfNotAuthenticated(html string) {
 }
 
 func GetAuthInfoFromUser() (string, string) {
-	reader := bufio.NewReader(os.Stdin)
-	fmt.Print(color.CyanString("Enter username: "))
-	username, _ := reader.ReadString('\n')
+	ask_username := "Enter username/matric: "
+	ask_password := "Password "
 
-	password, err := speakeasy.Ask(color.CyanString("Password ") + "(it won't be displayed): ")
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	reader := bufio.NewReader(os.Stdin)
+
+	if runtime.GOOS == "windows" {
+		fmt.Print(ask_username)
+		username, _ := reader.ReadString('\n')
+
+		password, err := speakeasy.Ask(ask_password + "(it won't be displayed): ")
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		return username, password
+	} else {
+		fmt.Print(color.CyanString(ask_username))
+		username, _ := reader.ReadString('\n')
+
+		password, err := speakeasy.Ask(color.CyanString(ask_password) + "(it won't be displayed): ")
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		return username, password
 	}
-	return username, password
 }
