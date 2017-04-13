@@ -9,4 +9,5 @@ Display recent notifications from italeem website using command line.
 - [x] Encryption for cred file
 - [x] Notification
 - [x] Color output unix
-- [ ] Color output windows
+- [x] Color output windows
+- [ ] Relogin
