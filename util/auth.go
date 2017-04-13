@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -20,10 +21,14 @@ import (
 func Login(client http.Client, loginUrl string, username string, password string) *http.Response {
 	msg := "Authenticating user"
 
-	s := spin.New()
-	for i := 0; i < 30; i++ {
-		fmt.Printf("\r\033[36m%s\033[m: %s %s", msg, username, s.Next())
-		time.Sleep(100 * time.Millisecond)
+	if runtime.GOOS == "windows" {
+		fmt.Fprintf(color.Output, "\r%s: %s", color.CyanString(msg), username)
+	} else {
+		s := spin.New()
+		for i := 0; i < 30; i++ {
+			fmt.Printf("\r%s: %s %s", color.CyanString(msg), username, s.Next())
+			time.Sleep(100 * time.Millisecond)
+		}
 	}
 
 	resp, err := client.PostForm(loginUrl, url.Values{

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -59,8 +60,15 @@ func ScrapeAnnouncements(resp *http.Response) {
 		}
 
 		countAnnouncements++
-		fmt.Printf("%s. %s - %s\n", color.CyanString(strconv.Itoa(countAnnouncements)), color.GreenString(announcement.author), color.YellowString(announcement.time_ago))
-		fmt.Printf("→%s\n→ %s\n\n", announcement.text, announcement.url)
+
+		msg := fmt.Sprintf("%s. %s - %s\n", color.CyanString(strconv.Itoa(countAnnouncements)), color.GreenString(announcement.author), color.YellowString(announcement.time_ago))
+		msg += fmt.Sprintf("→%s\n→ %s\n\n", announcement.text, announcement.url)
+
+		if runtime.GOOS == "windows" {
+			fmt.Fprintf(color.Output, msg)
+		} else {
+			fmt.Printf(msg)
+		}
 	})
 
 	icon := "/home/user/icon.png"
