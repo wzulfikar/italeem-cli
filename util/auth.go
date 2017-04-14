@@ -56,7 +56,7 @@ func Login(client http.Client, loginUrl string, username string, password string
 func exitIfNotAuthenticated(html string) {
 	notLoggedInString := "Forgotten your username or password?"
 	if strings.Contains(html, notLoggedInString) {
-		auth_failed_msg := color.RedString("\nAuthentication failed. Please try again :)")
+		auth_failed_msg := color.RedString("\nAuthentication failed. Please try again..")
 		if runtime.GOOS == "windows" {
 			fmt.Fprintf(color.Output, auth_failed_msg)
 		} else {

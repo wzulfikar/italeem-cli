@@ -33,6 +33,8 @@ func ScrapeAnnouncements(resp *http.Response) {
 
 	countAnnouncements := 0
 
+	fmt.Printf("\n")
+
 	// Find announcement items
 	doc.Find(".messagemenu .dropdown-menu li a").Each(func(i int, s *goquery.Selection) {
 		url, ok := s.Attr("href")
@@ -61,8 +63,8 @@ func ScrapeAnnouncements(resp *http.Response) {
 
 		countAnnouncements++
 
-		msg := fmt.Sprintf("%s. %s - %s\n", color.CyanString(strconv.Itoa(countAnnouncements)), color.GreenString(announcement.author), color.YellowString(announcement.time_ago))
-		msg += fmt.Sprintf("→%s\n→ %s\n\n", announcement.text, announcement.url)
+		msg := fmt.Sprintf("\n%s. %s - %s\n", color.CyanString(strconv.Itoa(countAnnouncements)), color.GreenString(announcement.author), color.YellowString(announcement.time_ago))
+		msg += fmt.Sprintf("→%s\n→ %s\n", announcement.text, announcement.url)
 
 		if runtime.GOOS == "windows" {
 			fmt.Fprintf(color.Output, msg)
