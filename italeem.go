@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/wzulfikar/italeem-cli/util"
 )
 
@@ -12,6 +10,6 @@ func main() {
 
 	client := util.CreateClient()
 	resp := util.Login(client, loginUrl, username, password)
-	fmt.Println("\n")
+
 	util.ScrapeAnnouncements(resp)
 }

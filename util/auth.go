@@ -36,7 +36,6 @@ func Login(client http.Client, loginUrl string, username string, password string
 		"password":         {password},
 		"rememberusername": {"1"},
 	})
-	defer resp.Body.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,6 +48,9 @@ func Login(client http.Client, loginUrl string, username string, password string
 
 	//reset the response body to the original unread state
 	resp.Body = ioutil.NopCloser(bytes.NewBuffer(bodyBytes))
+	resp.Body.Close()
+
+	fmt.Printf("\n")
 
 	return resp
 }

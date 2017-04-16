@@ -16,9 +16,7 @@ func Enc(key []byte, text string) string {
 	plaintext := []byte(text)
 
 	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	// The IV needs to be unique, but not secure. Therefore it's common to
 	// include it at the beginning of the ciphertext.
@@ -40,9 +38,7 @@ func Dec(key []byte, cryptoText string) string {
 	ciphertext, _ := base64.URLEncoding.DecodeString(cryptoText)
 
 	block, err := aes.NewCipher(key)
-	if err != nil {
-		panic(err)
-	}
+	checkError(err)
 
 	// The IV needs to be unique, but not secure. Therefore it's common to
 	// include it at the beginning of the ciphertext.
