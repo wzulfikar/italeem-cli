@@ -10,8 +10,7 @@ import (
 
 func checkError(err error) {
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(0)
+		exitWithMessage(err.Error(), 1)
 	}
 }
 
