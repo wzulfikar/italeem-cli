@@ -22,9 +22,8 @@ func Enc(key []byte, text string) string {
 	// include it at the beginning of the ciphertext.
 	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
 	iv := ciphertext[:aes.BlockSize]
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		panic(err)
-	}
+	_, err = io.ReadFull(rand.Reader, iv)
+	checkError(err)
 
 	stream := cipher.NewCFBEncrypter(block, iv)
 	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
@@ -43,8 +42,9 @@ func Dec(key []byte, cryptoText string) string {
 	// The IV needs to be unique, but not secure. Therefore it's common to
 	// include it at the beginning of the ciphertext.
 	if len(ciphertext) < aes.BlockSize {
-		panic("ciphertext too short")
+		exitWithMessage("ciphertext too short", 3)
 	}
+
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
 

@@ -2,7 +2,6 @@ package util
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"runtime"
 	"strconv"
@@ -25,9 +24,7 @@ type Announcement struct {
 
 func ScrapeAnnouncements(resp *http.Response) {
 	doc, err := goquery.NewDocumentFromResponse(resp)
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkError(err)
 
 	countAnnouncements := 0
 
@@ -35,13 +32,18 @@ func ScrapeAnnouncements(resp *http.Response) {
 	doc.Find(".messagemenu .dropdown-menu li a").Each(func(i int, s *goquery.Selection) {
 		url, ok := s.Attr("href")
 		if !ok {
-			log.Fatal("Cannot find href")
+			exitWithMessage("Cannot find href", 4)
 		}
 
 		text := s.Find("span.notification-text").Text()
 
 		time := s.Find("span.msg-time").Text()
 		split_text := strings.Split(text, ": Announcements:")
+
+		if len(split_text) < 2 {
+			return
+		}
+
 		author, announcementText := split_text[0], split_text[1]
 
 		// clean-up author string
@@ -79,5 +81,5 @@ func ScrapeAnnouncements(resp *http.Response) {
 	notify.Push(msg, "", icon, notificator.UR_CRITICAL)
 
 	// exit when user press enter
-	exitWithMessage("Finished fetching announcements. Press enter to exit..", 0)
+	exitWithMessage("\nFinished fetching announcements 👍", 0)
 }

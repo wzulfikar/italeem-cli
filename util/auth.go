@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"os"
@@ -36,9 +35,7 @@ func Login(client http.Client, loginUrl string, username string, password string
 		"password":         {password},
 		"rememberusername": {"1"},
 	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkError(err)
 
 	// read the response body to a variable
 	bodyBytes, _ := ioutil.ReadAll(resp.Body)
@@ -66,9 +63,7 @@ func exitIfNotAuthenticated(html string) {
 		}
 
 		err := os.Remove(getCredFile())
-		if err != nil {
-			fmt.Println(err)
-		}
+		checkError(err)
 		os.Exit(2)
 	}
 }
@@ -84,20 +79,16 @@ func GetAuthInfoFromUser() (string, string) {
 		username, _ := reader.ReadString('\n')
 
 		password, err := speakeasy.Ask(ask_password + "(it won't be displayed): ")
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		checkError(err)
+
 		return username, password
 	} else {
 		fmt.Print(color.CyanString(ask_username))
 		username, _ := reader.ReadString('\n')
 
 		password, err := speakeasy.Ask(color.CyanString(ask_password) + "(it won't be displayed): ")
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+		checkError(err)
+
 		return username, password
 	}
 }

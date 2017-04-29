@@ -1,7 +1,6 @@
 package util
 
 import (
-	"log"
 	"net/http"
 	"net/http/cookiejar"
 
@@ -13,8 +12,6 @@ func CreateClient() http.Client {
 		PublicSuffixList: publicsuffix.List,
 	}
 	jar, err := cookiejar.New(&options)
-	if err != nil {
-		log.Fatal(err)
-	}
+	checkError(err)
 	return http.Client{Jar: jar}
 }

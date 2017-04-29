@@ -31,7 +31,13 @@ func exit(errorCode int) {
 }
 
 func exitWithMessage(msg string, errorCode int) {
+	if errorCode > 0 {
+		fmt.Println("Oops! Something went wrong :(")
+	}
+
 	fmt.Println(msg)
+	fmt.Println("Press enter to exit..")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
+
 	exit(errorCode)
 }
