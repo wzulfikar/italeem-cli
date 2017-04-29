@@ -81,5 +81,5 @@ func ScrapeAnnouncements(resp *http.Response) {
 	notify.Push(msg, "", icon, notificator.UR_CRITICAL)
 
 	// exit when user press enter
-	exitWithMessage("\nFinished fetching announcements 👍", 0)
+	exitWithMessage("\nFinished fetching announcements :)", 0)
 }

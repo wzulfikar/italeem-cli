@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"runtime"
 
+	"github.com/fatih/color"
 	homedir "github.com/mitchellh/go-homedir"
 )
 
@@ -32,11 +34,17 @@ func exit(errorCode int) {
 
 func exitWithMessage(msg string, errorCode int) {
 	if errorCode > 0 {
-		fmt.Println("Oops! Something went wrong :(")
+		oops := fmt.Sprintf("%s\n", color.RedString("Oops! Something went wrong :("))
+
+		if runtime.GOOS == "windows" {
+			fmt.Fprintf(color.Output, oops)
+		} else {
+			fmt.Printf(oops)
+		}
 	}
 
 	fmt.Println(msg)
-	fmt.Println("Press enter to exit..")
+	fmt.Println("\nPress enter to exit..")
 	bufio.NewReader(os.Stdin).ReadBytes('\n')
 
 	exit(errorCode)
