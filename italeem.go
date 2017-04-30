@@ -1,8 +1,12 @@
 package main
 
-import "github.com/wzulfikar/italeem-cli/util"
+import (
+	"github.com/wzulfikar/italeem-cli/util"
+)
 
 func main() {
+	util.ExitIfNoInternet()
+
 	loginUrl := "http://italeem.iium.edu.my/2016/login/index.php"
 	username, password := util.GetCred()
 
