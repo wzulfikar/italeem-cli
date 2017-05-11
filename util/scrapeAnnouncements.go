@@ -40,17 +40,21 @@ func ScrapeAnnouncements(resp *http.Response) {
 		time := s.Find("span.msg-time").Text()
 		split_text := strings.Split(text, ": Announcements:")
 
-		if len(split_text) < 2 {
-			return
+		author, announcementText := "Italeem Notification", " "+text
+		if len(split_text) == 2 {
+			author, announcementText = split_text[0], split_text[1]
 		}
-
-		author, announcementText := split_text[0], split_text[1]
 
 		// clean-up author string
 		split_author := strings.Split(author, " posted in ")
+
 		// course_code := split_author[1]
 		author_slice := strings.Split(split_author[0], " ")
 		author_name := strings.Join(author_slice[0:len(author_slice)-1], " ")
+
+		if len(author_name) == 0 {
+			author_name = author
+		}
 
 		announcement := Announcement{
 			url:      url,

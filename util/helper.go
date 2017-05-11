@@ -13,6 +13,8 @@ import (
 )
 
 func CheckInternet() (bool, string) {
+	fmt.Println("Checking internet connection..")
+
 	url := "http://google.com/favicon.ico"
 
 	resp, err := http.Head(url)
