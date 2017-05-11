@@ -52,7 +52,7 @@ func ScrapeAnnouncements(resp *http.Response) {
 		author_slice := strings.Split(split_author[0], " ")
 		author_name := strings.Join(author_slice[0:len(author_slice)-1], " ")
 
-		if len(author_name) == 0 {
+		if len(split_author) == 1 {
 			author_name = author
 		}
 
